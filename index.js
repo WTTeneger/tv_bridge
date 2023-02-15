@@ -19,7 +19,7 @@ var credentials = {
 };
 
 
-http.createServer(app).listen(3000)
+http.createServer(app).listen(80)
 https.createServer(credentials, app).listen(8443)
 
 function set_env() {

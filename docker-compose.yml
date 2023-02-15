@@ -1,0 +1,66 @@
+version: "3.9"
+services:
+  web_backend:
+    restart: always
+    build:
+      context: './site/backend/'
+      dockerfile: Dockerfile
+    volumes:
+      - ./site/backend/:/src
+    # command: npm run dev
+    ports:
+      - 80:3000
+      - 8443:8443
+      - 8080:8080
+      - 443:8443
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DOCKER: 'true'
+      ME_CONFIG_DB_NAME: willberiesdb
+      ME_CONFIG_DB_LOGIN: ITAB_willberiesdb_user
+      ME_CONFIG_DB_PASSWORD: ITAB_willberiesdb_PASS_12
+      ME_CONFIG_MONGODB_URL: mongodb://itab:itabpass!@mongo/itab
+      REDIS_HOST: redis_queue
+    networks:
+      - postgres
+
+  redis:
+    container_name: redis_queue
+
+    image: "redis:alpine"
+    command: redis-server --requirepass ITAB_willberiesdb_PASS_rs
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      # - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+    networks:
+      - postgres
+
+  bull_area:
+    restart: always
+    build:
+      context: './site/bull_area/'
+      dockerfile: Dockerfile
+    volumes:
+      - ./site/bull_area/:/src
+    # command: node area.js
+    ports:
+      - 4567:4567
+    networks:
+      - postgres
+    depends_on:
+      - redis
+
+networks:
+  postgres:
+    driver: bridge
+
+# sudo docker-compose up --build bull_area redis web_backend

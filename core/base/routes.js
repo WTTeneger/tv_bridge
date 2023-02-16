@@ -5,7 +5,9 @@ import { getAlert } from './controller.js';
 
 const router = Router();
 
-router.get('/TV/getAlert/sl', getAlert)
-router.post('/TV/getAlert/slt', getAlert)
+// router.get('/TV/getAlert/', getAlert)
+router.post('/TV/getAlert/:ID', getAlert)
+
+// 
 
 export default router;

@@ -80,7 +80,7 @@ class BinanceAPI {
         }
 
         // console.log(api_url, options);
-        let data;
+        let data = {};
         if (method === 'GET') {
             await axios.get(api_url, options).then(response => {
                 // записываем в переменную data ответ от сервера в виде объекта который он прислал
@@ -95,7 +95,7 @@ class BinanceAPI {
                 // записываем в переменную data ответ от сервера в виде объекта который он прислал
                 data = response.data.data;
             }).catch(error => { 
-                console.error(error.response.data);
+                console.error(error.response);
                 // data = error.response.data;
             });
         }
@@ -114,7 +114,7 @@ class BinanceAPI {
         const result = await this.request('setLeverage', params);
         return result;
     }
-
+    
     // создание сделки на покупку futures с 3 плечами
     async createOrder(symbol, side, quantity, price, type, timeInForce, reduceOnly, closePosition, workingType, priceProtect) {
         /*

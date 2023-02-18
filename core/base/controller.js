@@ -14,10 +14,7 @@ export async function getAlertData(req, res) {
     });
     let tokens_API = binance_TOKENS[ID];
 
-
-
     let { exchange, coin, direction, price, riskM, leverage } = req.body;
-
 
     // Проверить, что все поля есть
     if (!coin || !exchange || !direction || !price) return res.status(400).json({
@@ -32,8 +29,10 @@ export async function getAlertData(req, res) {
 
     let binance = new BinanceAPI(tokens_API[0], tokens_API[1]);
 
-    // создаем бинанс связку
+    // binance
+    console.log('BB');
 
+    // создаем бинанс связку
     direction = direction.toUpperCase();
     await binance.setLeverage(coin, leverage);
     // закрыть позицию
@@ -55,7 +54,8 @@ export async function getAlertData(req, res) {
     let usdt_balance = balance.filter(item => item.asset === 'USDT')[0];
     // console.log('usdt_balance', usdt_balance, riskM);
     let total_for_trade = usdt_balance.availableBalance * (riskM / 100);
-
+    console.log('BBs');
+    console.log(usdt_balance, total_for_trade);
     // console.log(total_for_trade);
 
     let coin_info = await binance.getCoinInfo(coin);
@@ -83,13 +83,11 @@ export async function getAlertData(req, res) {
     let price_ = parseFloat(price).toFixed(pricePrecision);
     console.log(count_tokens, price, price_);
     // make float
-        
-
     console.log("BUY");
+    // console.log(data);
+    
     // открыть позицию по направлению
     var order = await binance.createOrder(coin, direction, count_tokens, 0, 'MARKET', 'GTC', false, false, 'CONTRACT_PRICE', false)
-
-    //
 
     return res.json({
         // coin_info,

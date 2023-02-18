@@ -151,13 +151,13 @@ class BinanceAPI {
                 symbol,
                 side,
                 type,
-                timeInForce,
+                // timeInForce,
                 quantity,
-                price,
-                reduceOnly,
-                closePosition,
-                workingType,
-                priceProtect
+                // price,
+                // reduceOnly,
+                // closePosition,
+                // workingType,
+                // priceProtect
             };
         }
         const result = await this.request('createFuturesOrder', params);

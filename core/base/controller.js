@@ -40,6 +40,7 @@ export async function getAlertData(req, res) {
     var order = await binance.getOpenPositions(coin)
     // console.log(order);
     if (order.length > 0) {
+        console.log("SELL");
         // console.log('order[0]', order[0]);
         let positionAmt = order[0].positionAmt;
         let DER = positionAmt > 0 ? "SELL" : "BUY"
@@ -83,8 +84,10 @@ export async function getAlertData(req, res) {
     console.log(count_tokens, price, price_);
     // make float
         
+
+    console.log("BUY");
     // открыть позицию по направлению
-    var order = await binance.createOrder(coin, direction, count_tokens, 0, 'MARKET', 'GTC')
+    var order = await binance.createOrder(coin, direction, count_tokens, 0, 'MARKET', 'GTC', false, false, 'CONTRACT_PRICE', false)
 
     //
 

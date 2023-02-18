@@ -38,7 +38,7 @@ export async function getAlertData(req, res) {
     await binance.setLeverage(coin, leverage);
     // закрыть позицию
     var order = await binance.getOpenPositions(coin)
-    console.log(order);
+    // console.log(order);
     if (order.length > 0) {
         // console.log('order[0]', order[0]);
         let positionAmt = order[0].positionAmt;
@@ -65,7 +65,7 @@ export async function getAlertData(req, res) {
     
     // найти нужную пару
     coin_info = coin_info.filter(item => item.symbol === coin)[0];
-    console.log(coin_info);
+    // console.log(coin_info);
     // узнать сколько знаков после запятой
     let precision = coin_info.quantityPrecision;
     let pricePrecision = coin_info.filters;

@@ -30,6 +30,8 @@ export async function getAlertData(req, res) {
     // плечи по умолчанию 3
     if (!leverage) leverage = 3;
 
+    let binance = new BinanceAPI(tokens_API[0], tokens_API[1]);
+
     // создаем бинанс связку
 
     direction = direction.toUpperCase();
@@ -48,7 +50,6 @@ export async function getAlertData(req, res) {
         await binance.createOrder(coin, DER, positionAmt_total, 0, 'MARKET', 'GTC', false, true, 'CONTRACT_PRICE', false)
     }
 
-    let binance = new BinanceAPI(tokens_API[0], tokens_API[1]);
     let balance = await binance.getBalance();
     let usdt_balance = balance.filter(item => item.asset === 'USDT')[0];
     // console.log('usdt_balance', usdt_balance, riskM);

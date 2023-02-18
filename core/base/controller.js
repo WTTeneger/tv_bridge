@@ -60,7 +60,7 @@ export async function getAlertData(req, res) {
     // узнать сколько знаков после запятой
     console.log(coin_info);
 
-    coin_info = coin_info.symbols ?? [];
+    coin_info = coin_info.symbols;
 
     // найти нужную пару
     coin_info = coin_info.filter(item => item.symbol === coin)[0];

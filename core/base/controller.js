@@ -55,17 +55,17 @@ export async function getAlertData(req, res) {
     let total_for_trade = usdt_balance.availableBalance * (riskM / 100);
 
     // console.log(total_for_trade);
-    
+
     let coin_info = await binance.getCoinInfo(coin);
     // узнать сколько знаков после запятой
     console.log(coin_info);
 
-    coin_info = coin_info?.symbols ?? [];
+    coin_info = coin_info.symbols ?? [];
 
     // найти нужную пару
     coin_info = coin_info.filter(item => item.symbol === coin)[0];
     // узнать сколько знаков после запятой
-    let precision = coin_info?.quantityPrecision;
+    let precision = coin_info.quantityPrecision;
 
 
     let count_tokens = ((total_for_trade / price).toFixed(precision)) * leverage;

@@ -59,7 +59,7 @@ export async function getAlertData(req, res) {
 
     let coin_info = await binance.getCoinInfo(coin);
     // узнать сколько знаков после запятой
-    console.log(coin_info);
+    // console.log(coin_info);
 
     coin_info = coin_info.symbols;
 
@@ -70,6 +70,7 @@ export async function getAlertData(req, res) {
 
 
     let count_tokens = ((total_for_trade / price).toFixed(precision)) * leverage;
+    console.log(count_tokens);
     // открыть позицию по направлению
     var order = await binance.createOrder(coin, direction, count_tokens, price, 'LIMIT', 'GTC', false, false, 'CONTRACT_PRICE', false)
 

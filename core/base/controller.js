@@ -38,7 +38,7 @@ export async function getAlertData(req, res) {
     await binance.setLeverage(coin, leverage);
     // закрыть позицию
     var order = await binance.getOpenPositions(coin)
-
+    console.log(order);
     if (order.length > 0) {
         // console.log('order[0]', order[0]);
         let positionAmt = order[0].positionAmt;
@@ -60,19 +60,31 @@ export async function getAlertData(req, res) {
     let coin_info = await binance.getCoinInfo(coin);
     // узнать сколько знаков после запятой
     // console.log(coin_info);
-
+    
     coin_info = coin_info.symbols;
-
+    
     // найти нужную пару
     coin_info = coin_info.filter(item => item.symbol === coin)[0];
+    console.log(coin_info);
     // узнать сколько знаков после запятой
     let precision = coin_info.quantityPrecision;
+    let pricePrecision = coin_info.filters;
+    // найти в pricePrecision PRICE_FILTER
+    pricePrecision = pricePrecision.filter(item => item.filterType === 'PRICE_FILTER')[0];
+    pricePrecision = pricePrecision.tickSize;
+    // сделать из 0.001000 0.001 
+    pricePrecision = pricePrecision.split('1')[0].length - 1;
+
+
 
 
     let count_tokens = ((total_for_trade / price).toFixed(precision)) * leverage;
-    console.log(count_tokens);
+    let price_ = parseFloat(price).toFixed(pricePrecision);
+    console.log(count_tokens, price, price_);
+    // make float
+        
     // открыть позицию по направлению
-    var order = await binance.createOrder(coin, direction, count_tokens, price, 'LIMIT', 'GTC', false, false, 'CONTRACT_PRICE', false)
+    var order = await binance.createOrder(coin, direction, count_tokens, price_, 'LIMIT', 'GTC', false, false, 'CONTRACT_PRICE', false)
 
     //
 

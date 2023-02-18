@@ -84,7 +84,7 @@ export async function getAlertData(req, res) {
     // make float
         
     // открыть позицию по направлению
-    var order = await binance.createOrder(coin, direction, count_tokens, 0, 'MARKET', 'GTC', false, false, 'CONTRACT_PRICE', false)
+    var order = await binance.createOrder(coin, direction, count_tokens, 0, 'MARKET', 'GTC')
 
     //
 

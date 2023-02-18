@@ -39,7 +39,7 @@ export async function getAlertData(req, res) {
     // закрыть позицию
     var order = await binance.getOpenPositions(coin)
     // console.log(order);
-    if (order?.length > 0) {
+    if (order.length > 0) {
         // console.log('order[0]', order[0]);
         let positionAmt = order[0].positionAmt;
         let DER = positionAmt > 0 ? "SELL" : "BUY"

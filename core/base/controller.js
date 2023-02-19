@@ -57,7 +57,7 @@ export async function getAlertData(req, res) {
                 if (positionAmt != '0.0') {
                     open_orders += 1
                     let DER = positionAmt > 0 ? "SELL" : "BUY"
-                
+
                     // сделать положительным
                     let positionAmt_total = positionAmt < 0 ? positionAmt * -1 : positionAmt;
                     // закрываем ордер
@@ -113,9 +113,11 @@ export async function getAlertData(req, res) {
             // открыть позицию по направлению
             new_order = await binance.createOrder(coin, direction, count_tokens, price_, 'MARKET', 'GTC', false, false, 'CONTRACT_PRICE', false)
             // если msg есть в new_order, значит ошибка
-            if (new_order?.msg) {
-                TGBot.sendMessage(-762436470, `Ошибка при создании ордера \nERROR: ${new_order.msg} \n\naccount: ${ID}`);
-            }
+            try {
+                if (new_order.msg) {
+                    TGBot.sendMessage(-762436470, `Ошибка при создании ордера \nERROR: ${new_order.msg} \n\naccount: ${ID}`);
+                }
+            } catch (e) { }
         }
 
         return res.json({
@@ -123,7 +125,7 @@ export async function getAlertData(req, res) {
             total_for_trade,
             count_tokens
         })
-    } catch (e) { 
+    } catch (e) {
         TGBot.sendMessage(-762436470, `Ошибка при создании ордера \nERROR: ${e} \n\naccount: ${ID}`);
     }
 

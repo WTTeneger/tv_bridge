@@ -72,10 +72,12 @@ export async function getAlertData(req, res) {
         }
 
         let balance = await binance.getBalance();
-        // console.log(balance);
-        if (balance?.msg) {
-            TGBot.sendMessage(-762436470, `Ошибка при создании ордера \nERROR: ${balance.msg} \n\naccount: ${ID}`);
-        }
+        // елси msg есть в балансе, то ошибка
+        try {
+            if (balance.msg) {
+                TGBot.sendMessage(-762436470, `Ошибка при создании ордера \nERROR: ${balance.msg} \n\naccount: ${ID}`);
+            }
+        } catch (e) { }
         let usdt_balance = balance.filter(item => item.asset === 'USDT')[0];
         let total_for_trade = usdt_balance.availableBalance * (riskM / 100);
 

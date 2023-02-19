@@ -86,7 +86,8 @@ class BinanceAPI {
                 // записываем в переменную data ответ от сервера в виде объекта который он прислал
                 data = response.data;
             }).catch(error => {
-                console.error(error.response.data);
+                // console.error(error.response.data);
+                data = error.response.data
                 // data = error.response.data;
             });
         }
@@ -95,7 +96,8 @@ class BinanceAPI {
                 // записываем в переменную data ответ от сервера в виде объекта который он прислал
                 data = response.data.data;
             }).catch(error => { 
-                console.error(error.response);
+                // console.error(error.response.data);
+                data = error.response.data
                 // data = error.response.data;
             });
         }
@@ -117,6 +119,7 @@ class BinanceAPI {
     
     // создание сделки на покупку futures с 3 плечами
     async createOrder(symbol, side, quantity, price, type, timeInForce, reduceOnly, closePosition, workingType, priceProtect) {
+        console.log(quantity);
         /*
         symbol: 'BTCUSDT', // это пара 
         side: 'BUY', // это направление
@@ -138,8 +141,8 @@ class BinanceAPI {
                 symbol,
                 side,
                 type,
-                // timeInForce,
                 quantity,
+                // timeInForce,
                 // price,
                 // reduceOnly,
                 // closePosition,
@@ -159,7 +162,9 @@ class BinanceAPI {
                 // workingType,
                 // priceProtect
             };
+
         }
+        console.log('params', params);
         const result = await this.request('createFuturesOrder', params);
         return result;
 

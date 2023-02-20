@@ -109,7 +109,7 @@ async function set_orders(ID, req, res) {
 
 
 
-        let count_tokens = ((total_for_trade / price).toFixed(precision)) * leverage;
+        let count_tokens = ((total_for_trade / price) * leverage).toFixed(precision);
         let price_ = parseFloat(price).toFixed(pricePrecision);
         console.log(count_tokens, price, price_);
         // make float
@@ -154,7 +154,7 @@ export async function getAlertData(req, res) {
     }
     await Promise.all(dt)
     // console.log(dt);
-    return res.json({rt})
+    return res.json({})
 
     // break
     const { ID } = req.params;

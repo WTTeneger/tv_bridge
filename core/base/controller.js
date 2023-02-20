@@ -17,11 +17,11 @@ const binance_TOKENS = {
         leverage: 6,
         keys: ['lmTRpBu7E8AtRv5V79nesSKENGsRzjQ7PxzoHVEPd6rbwDTHWJXx5qrTHPzDxer2', '5sNtsrO3Gvt4vkxvDLue4GRtK0R2fVN9RMSDLidQ4pwYzdMwq4XU3SHglu7QuBRh'],
     },
-    'fill': {
-        riskM: 7,
-        leverage: 6,
-        keys: ['OTXL8BFWF1SUiSsxS3WjvGGd8qdgU7O0xZqXAaVRzXTAd6sAvxjyfCb0ALlPw6WT', 'edLJoZ5rIVYW9j41b77X5oUftt9gq78uS8CCBLPZRss7oZobnHG3tMMXsTk72SoS']
-    }
+    // 'fill': {
+    //     riskM: 7,
+    //     leverage: 6,
+    //     keys: ['OTXL8BFWF1SUiSsxS3WjvGGd8qdgU7O0xZqXAaVRzXTAd6sAvxjyfCb0ALlPw6WT', 'edLJoZ5rIVYW9j41b77X5oUftt9gq78uS8CCBLPZRss7oZobnHG3tMMXsTk72SoS']
+    // }
 }
 
 async function set_orders(ID, req, res) {

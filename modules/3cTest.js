@@ -106,7 +106,7 @@ export async function close_deal(params) {
         account_id: params.account_id,
         status: 'active'
     }
-    if (params?.all !== true) {
+    if (params.all !== true) {
         dt.pair = `${pair_coin[0]}_${pair_coin[1]}${pair_coin[0]}`
     }
     api.smartTradesV2(dt).then((data) => {

@@ -19,41 +19,61 @@ let _params = {
     SL_price: 0,
     TP_price: 0,
     SL_percent: 2,
-    TP_percent: 0.6
+    TP_percent: 0.6,
+
+    balance_percent: 0.1,
 }
 
 // Создание сделки по паре
 export async function create_deal(params) {
-    let binance_pair = _params.pair.split('_')[1] + _params.pair.split('_')[0]
 
+    // получить баланс аккаунта
+    
+
+
+    let binance_pair = params.pair.split('_')[1] + params.pair.split('_')[0]
     // получить цену валютной пары
     let price_pair = 0
     await api.getPairsBids({
         symbol: binance_pair,
         limit: 20
     }).then((data) => {
-        price_pair = parseFloat(_params.derection == 'sell' ? data.bids[0][0] : data.asks[0][0])
+        price_pair = parseFloat(params.derection == 'sell' ? data.bids[0][0] : data.asks[0][0])
     })
 
+    if (params.balance_percent) {
+        let balance = 0
+        await api.accountLoadBalances(params.account_id).then((data) => {
+            // console.log(data);
+            balance = parseFloat(data.usd_amount)
+        })
+        console.log('balance', balance);
+        let balance_for_deal = parseFloat(parseFloat(balance) * parseFloat(params.balance_percent))
+        console.log('balance_for_deal', balance_for_deal);
+        params.units = parseFloat(balance_for_deal / price_pair) * params.leverage
+        console.log('units',params.units);
+    }
+    return true
+
     // расчет доп шагов цены для SL и TP
-    let psl = parseFloat(price_pair * ((0.01 * _params.SL_percent) / _params.leverage))
-    let ptp = parseFloat(price_pair * ((0.01 * _params.TP_percent) / _params.leverage))
+    let psl = parseFloat(price_pair * ((0.01 * params.SL_percent) / params.leverage))
+    let ptp = parseFloat(price_pair * ((0.01 * params.TP_percent) / params.leverage))
 
 
     // расчет цены на которую нужно ставить SL и TP
-    _params.SL_price = _params.derection == 'buy' ? price_pair - psl : price_pair + psl
-    _params.TP_price = _params.derection == 'buy' ? price_pair + ptp : price_pair - ptp
+    params.SL_price = params.derection == 'buy' ? price_pair - psl : price_pair + psl
+    params.TP_price = params.derection == 'buy' ? price_pair + ptp : price_pair - ptp
 
-    console.log(_params.SL_price, _params.TP_price, price_pair);
+    console.log(params.SL_price, params.TP_price, price_pair);
 
     // return true
     api.createSmartTradesV2({
-        "account_id": _params.account_id,
-        "pair": _params.pair,
+        "account_id": params.account_id,
+        "pair": params.pair,
         "position": {
-            "type": _params.derection,
+            "type": params.derection,
             "units": {
-                "value": _params.units,
+                "value": params.units,
             },
             "order_type": "market"
         },
@@ -61,7 +81,7 @@ export async function create_deal(params) {
         leverage: {
             enabled: true,
             type: 'isolated',
-            value: _params.leverage
+            value: params.leverage
         },
 
         "take_profit": {
@@ -70,24 +90,24 @@ export async function create_deal(params) {
                 {
                     "order_type": "market",
                     "price": {
-                        "value": _params.TP_price,
+                        "value": params.TP_price,
                         "type": "bid"
                     },
                     "volume": "100.0",
                     "trailing": {
                         "enabled": "true",
-                        "percent": _params.trailing
+                        "percent": params.trailing
                     }
                 }
             ]
         },
         "stop_loss": {
-            "enabled": "true",
+            "enabled": params.SL_percent > 0 ? true : false,
             "breakeven": "false",
             "order_type": "market",
             "conditional": { // conditional stop loss - if price is lower than 1.97, then place stop loss order
                 "price": {
-                    "value": _params.SL_price,
+                    "value": params.SL_price,
                     "type": "bid"
                 },
             }

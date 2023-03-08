@@ -51,9 +51,8 @@ export async function create_deal(params) {
         let balance_for_deal = parseFloat(parseFloat(balance) * parseFloat(params.balance_percent))
         console.log('balance_for_deal', balance_for_deal);
         params.units = parseFloat(balance_for_deal / price_pair) * params.leverage
-        console.log('units',params.units);
     }
-    return true
+    // return true
 
     // расчет доп шагов цены для SL и TP
     let psl = parseFloat(price_pair * ((0.01 * params.SL_percent) / params.leverage))

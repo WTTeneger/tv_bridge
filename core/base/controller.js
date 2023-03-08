@@ -1,16 +1,10 @@
 import BinanceAPI from "../../modules/binanceAPI.js";
-
 import TelegramBot from "node-telegram-bot-api";
-import { FunctionToString } from "@sentry/core";
+
+import { create_deal, close_deal } from "../../modules/3cTest.js";
+
 
 const TGBot = new TelegramBot('5940809810:AAHeW1cdYEsOSWz7bFSlD-PkyG_gK4J6I2E', { polling: false });
-
-// получить сообщение от телеграма
-// TGBot.on('message', (msg) => {
-//     const chatId = msg.chat.id;
-//     // TGBot.sendMessage(chatId, 'Received your message'+chatId);
-// });
-
 const binance_TOKENS = {
     'amal': {
         riskM: 25,
@@ -43,6 +37,7 @@ async function set_orders(ID, req, res) {
     let leverage = users.leverage;
     // риск 7% по умолчанию
     if (!riskM) riskM = 7;
+    let stop_lose = 5
 
     // плечи по умолчанию 3
     if (!leverage) leverage = 3;
@@ -69,6 +64,11 @@ async function set_orders(ID, req, res) {
                     // закрываем ордер
                     try {
                         await binance.createOrder(coin, DER, positionAmt_total, 0, 'MARKET', 'GTC', false, true, 'CONTRACT_PRICE', false)
+
+                        // поставить TAKE_PROFIT на 5%
+                        let price__ = parseFloat(ord.entryPrice) * (1 + (stop_lose / 100));
+                        let price_ = parseFloat(price__).toFixed(pricePrecision);
+                        await binance.createOrder(coin, DER, positionAmt_total, price_, 'TAKE_PROFIT', 'GTC', false, true, 'CONTRACT_PRICE', false)
                         open_orders -= 1
                     } catch (e) {
                         console.log(e);
@@ -269,4 +269,44 @@ export async function getAlertData(req, res) {
     }
 
 
+}
+
+
+export async function setOrder(req, res) {
+    // let _params = {
+    //     derection: 'buy',
+    //     pair: 'USDT_HOOK',
+    //     account_id: 32249456,
+    //     leverage: 4,
+    //     units: 10,
+    //     trailing: 1,
+    //     SL_percent: 2,
+    //     TP_percent: 0.6
+    // }
+    let _params = req.body
+    _params.SL_price = 0
+    _params.TP_price = 0
+
+    await close_deal(_params)
+    await create_deal(_params)
+    return res.status(200).json({ status: 'ok' })
+}
+
+export async function closeAll(req, res) {
+    let _params = {
+        derection: 'buy',
+        pair: 'USDT_HOOK',
+        account_id: 32249456,
+        leverage: 4,
+        units: 10,
+        trailing: 1,
+        SL_price: 0,
+        TP_price: 0,
+        SL_percent: 2,
+        TP_percent: 0.6
+    }
+
+    _params.all = true
+    await close_deal(_params)
+    return res.status(200).json({ status: 'ok' })
 }

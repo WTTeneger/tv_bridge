@@ -86,13 +86,14 @@ export async function create_deal(params) {
     // params.TP_price = params.derection == 'buy' ? price_pair + ptp : price_pair - ptp
     params.SL_price = MakeROE(price_pair, params.SL_percent, params.leverage, params.derection)
     
-    params.TPFirst_price = MakeROE(price_pair, 1, params.leverage, params.derection)
+
+
+    params.TPFirst_price = MakeROE(price_pair, params.TP_first ?? 1, params.leverage, params.derection)
     params.TP_price = MakeROE(price_pair, params.TP_percent, params.leverage, params.derection)
     params.TPMax_price = MakeROE(price_pair, params.TP_max, params.leverage, params.derection)
 
-    console.log('SL_price', params.SL_price);
 
-    params.TP_First = MakeROE(price_pair, 1, params.leverage, params.derection)
+
 
     params.type_or = params.derection == 'buy' ? 'bid' : 'ask'
     params.type_sl = 'ask'
@@ -123,6 +124,7 @@ export async function create_deal(params) {
             "enabled": "true",
             "steps": [
                 {
+                    // Безубыточный выход
                     "order_type": "limit",
                     "price": {
                         "value": params.TPFirst_price,
@@ -131,14 +133,7 @@ export async function create_deal(params) {
                     "volume": "25.0",
                 },
                 {
-                    "order_type": "limit",
-                    "price": {
-                        "value": params.TPMax_price,
-                        "type": params.type_tp
-                    },
-                    "volume": "35.0",
-                },
-                {
+                    // Основной TP
                     "order_type": "market",
                     "price": {
                         "value": params.TP_price,
@@ -149,7 +144,16 @@ export async function create_deal(params) {
                         "enabled": "true",
                         "percent": params.trailing
                     }
-                }
+                },
+                {
+                    // Максимальный TP
+                    "order_type": "limit",
+                    "price": {
+                        "value": params.TPMax_price,
+                        "type": params.type_tp
+                    },
+                    "volume": "35.0",
+                },
             ]
         },
         "stop_loss": {

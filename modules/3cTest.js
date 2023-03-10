@@ -87,8 +87,8 @@ export async function create_deal(params) {
     params.SL_price = MakeROE(price_pair, params.SL_percent, params.leverage, params.derection)
     
 
-
-    params.TPFirst_price = MakeROE(price_pair, params.TP_first ?? 1, params.leverage, params.derection)
+    params.TP_first = params.TP_first ?? 1
+    params.TPFirst_price = MakeROE(price_pair, params.TP_first, params.leverage, params.derection)
     params.TP_price = MakeROE(price_pair, params.TP_percent, params.leverage, params.derection)
     params.TPMax_price = MakeROE(price_pair, params.TP_max, params.leverage, params.derection)
 

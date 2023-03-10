@@ -281,11 +281,15 @@ export async function setOrder(req, res) {
     //     units: 10,
     //     trailing: 1,
     //     SL_percent: 2,
-    //     TP_percent: 0.6
+    //     TP_percent: 0.6 -- 60% от баланса
+    //     TP_max: 10, -- максимальное количество TP
+    //     balance_percent: 0.5  - 50% от баланса
+    
     // }
     let _params = req.body
     _params.SL_price = 0
     _params.TP_price = 0
+    _params.TP_max = _params.TP_max || 10
 
     await close_deal(_params)
     await create_deal(_params)

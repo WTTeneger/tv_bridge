@@ -24,12 +24,34 @@ let _params = {
     balance_percent: 0.1,
 }
 
+/**
+ * функция расчета ROE
+ * 
+ * @param {*} enter цена входа
+ * @param {*} percent  процент ROE
+ * @param {*} leverage плечо
+ * @param {*} derection направление сделки (buy, sell)
+ * @returns цена выхода для ROE
+ *
+ *  
+ **/
+function MakeROE(enter, percent, leverage, derection) {
+    console.log(enter, percent, leverage, derection);
+    // ROE 2 % для 7 плеча
+    // 1.590 * 0.02 = 0.0318 / 7 = 0.0045 | 1.590 + 0.0045 = 1.5945
+
+    let commission = 0.01
+    let add_value = parseFloat((enter * (percent * 0.01)) / leverage)
+    add_value = parseFloat(add_value + (add_value * commission))
+
+    return (derection == 'buy' ? enter + add_value : enter - add_value)
+}
+
+
 // Создание сделки по паре
 export async function create_deal(params) {
 
     // получить баланс аккаунта
-    
-
 
     let binance_pair = params.pair.split('_')[1] + params.pair.split('_')[0]
     // получить цену валютной пары
@@ -55,15 +77,29 @@ export async function create_deal(params) {
     // return true
 
     // расчет доп шагов цены для SL и TP
-    let psl = parseFloat(price_pair * ((0.01 * params.SL_percent) / params.leverage))
-    let ptp = parseFloat(price_pair * ((0.01 * params.TP_percent) / params.leverage))
+    // let psl = parseFloat(price_pair * ((0.01 * params.SL_percent) / params.leverage))
+    // let ptp = parseFloat(price_pair * ((0.01 * params.TP_percent) / params.leverage))
 
 
     // расчет цены на которую нужно ставить SL и TP
-    params.SL_price = params.derection == 'buy' ? price_pair - psl : price_pair + psl
-    params.TP_price = params.derection == 'buy' ? price_pair + ptp : price_pair - ptp
+    // params.SL_price = params.derection == 'buy' ? price_pair - psl : price_pair + psl
+    // params.TP_price = params.derection == 'buy' ? price_pair + ptp : price_pair - ptp
+    params.SL_price = MakeROE(price_pair, params.SL_percent, params.leverage, params.derection)
+    
+    params.TPFirst_price = MakeROE(price_pair, 1, params.leverage, params.derection)
+    params.TP_price = MakeROE(price_pair, params.TP_percent, params.leverage, params.derection)
+    params.TPMax_price = MakeROE(price_pair, params.TP_max, params.leverage, params.derection)
 
-    console.log(params.SL_price, params.TP_price, price_pair);
+    console.log('SL_price', params.SL_price);
+
+    params.TP_First = MakeROE(price_pair, 1, params.leverage, params.derection)
+
+    params.type_or = params.derection == 'buy' ? 'bid' : 'ask'
+    params.type_sl = 'ask'
+    params.type_tp = 'bid'
+
+
+    params.trailing = parseFloat(params.trailing) / params.leverage
 
     // return true
     api.createSmartTradesV2({
@@ -87,12 +123,28 @@ export async function create_deal(params) {
             "enabled": "true",
             "steps": [
                 {
+                    "order_type": "limit",
+                    "price": {
+                        "value": params.TPFirst_price,
+                        "type": params.type_tp
+                    },
+                    "volume": "25.0",
+                },
+                {
+                    "order_type": "limit",
+                    "price": {
+                        "value": params.TPMax_price,
+                        "type": params.type_tp
+                    },
+                    "volume": "35.0",
+                },
+                {
                     "order_type": "market",
                     "price": {
                         "value": params.TP_price,
-                        "type": "bid"
+                        "type": params.type_tp
                     },
-                    "volume": "100.0",
+                    "volume": "40.0",
                     "trailing": {
                         "enabled": "true",
                         "percent": params.trailing
@@ -101,16 +153,26 @@ export async function create_deal(params) {
             ]
         },
         "stop_loss": {
-            "enabled": params.SL_percent > 0 ? true : false,
-            "breakeven": "false",
+            "enabled":  true,
+            "breakeven": false,
             "order_type": "market",
-            "conditional": { // conditional stop loss - if price is lower than 1.97, then place stop loss order
+            "conditional": { 
                 "price": {
                     "value": params.SL_price,
-                    "type": "bid"
+                    // "percent": params.trailing,
+                    "type": params.type_sl
                 },
+                trailing: {
+                    enabled: true,
+                    percent: params.trailing
+                }
+            },
+            timeout: {
+                enabled: true,
+                value: '40' // 40 секунд - время на проверку
             }
         }
+
     }).then((data) => {
         console.log('rt', data)
     })
@@ -139,3 +201,23 @@ export async function close_deal(params) {
     })
 
 }
+
+
+
+
+/*
+
+// Поставил сделку на 4x
+цена входа 1.600 
+
+ROE 1% = 1.600 * 0.01 = 0.016 / 4 = 0.004 | 1.600 + 0.004 = 1.604
+
+ROE 2% = 1.600 * 0.02 = 0.032 / 4 = 0.008 | 1.600 + 0.008 = 1.608
+
+ROE 3% = 1.600 * 0.03 = 0.048 / 4 = 0.012 | 1.600 + 0.012 = 1.612
+
+
+Цена выхода 1.590
+
+ROE 1% = 1.590 * 0.01 = 0.0159 / 4 = 0.004 | 1.590 - 0.004 = 1.586
+*/

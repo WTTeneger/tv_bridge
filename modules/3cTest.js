@@ -133,7 +133,7 @@ export async function create_deal(params) {
                 },
                 {
                     // Основной TP
-                    "order_type": params.TP_trailing ? 'limit' : 'market',
+                    "order_type": params.TP_trailing ? 'market' : 'limit',
                     "price": {
                         "value": params.TP_price,
                         "type": params.type_tp
@@ -157,7 +157,7 @@ export async function create_deal(params) {
         },
         "stop_loss": {
             "enabled":  true,
-            "breakeven": false,
+            "breakeven": true,
             "order_type": "market",
             "conditional": { 
                 "price": {

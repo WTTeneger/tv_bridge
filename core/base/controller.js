@@ -290,6 +290,7 @@ export async function setOrder(req, res) {
     _params.SL_price = 0
     _params.TP_price = 0
     _params.TP_max = _params.TP_max || 10
+    _params.SL_sec = _params.SL_sec || 60
 
     await close_deal(_params)
     await create_deal(_params)

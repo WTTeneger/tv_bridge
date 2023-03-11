@@ -133,7 +133,7 @@ export async function create_deal(params) {
                 },
                 {
                     // Основной TP
-                    "order_type": "limit",
+                    "order_type": params.TP_trailing ? 'limit' : 'market',
                     "price": {
                         "value": params.TP_price,
                         "type": params.type_tp
@@ -172,7 +172,7 @@ export async function create_deal(params) {
             },
             timeout: {
                 enabled: true,
-                value: '60' // 60 секунд - время на проверку
+                value: params.SL_sec // 60 секунд - время на проверку
             }
         }
 

@@ -92,6 +92,9 @@ export async function create_deal(params) {
 
 
 
+    console.log('TP1', params.TPFirst_price);
+    console.log('TP2', params.TP_price);
+
 
     params.type_or = params.derection == 'buy' ? 'bid' : 'ask'
     params.type_sl = 'ask'
@@ -101,7 +104,6 @@ export async function create_deal(params) {
     params.TP_trailing = parseFloat(params.TP_trailing) / params.leverage
     params.SL_trailing = parseFloat(params.SL_trailing) / params.leverage
 
-    // return true
     api.createSmartTradesV2({
         "account_id": params.account_id,
         "pair": params.pair,
@@ -146,18 +148,22 @@ export async function create_deal(params) {
                 },
                 {
                     // Максимальный TP
-                    "order_type": "limit",
+                    "order_type": "market",
                     "price": {
                         "value": params.TPMax_price,
                         "type": params.type_tp
                     },
                     "volume": "35.0",
+                    "trailing": {
+                        "enabled": true,
+                        "percent": 0.25
+                    }
                 },
             ]
         },
         "stop_loss": {
             "enabled":  true,
-            "breakeven": true,
+            "breakeven": false,
             "order_type": "market",
             "conditional": { 
                 "price": {

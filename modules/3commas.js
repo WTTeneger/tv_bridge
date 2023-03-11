@@ -15,7 +15,6 @@ class threeCommasAPI {
     }
 
     generateEncodeURL(data) {
-        console.log(data);
         return (Object.entries(data).map(([key, value]) => {
             if (typeof value === 'object') {
                 value = encodeURIComponent(JSON.stringify(value));
@@ -58,18 +57,6 @@ class threeCommasAPI {
                 sig = this.generateSignature(path, JSON.stringify(params));
             }
         }
-
-        console.log('url', url);
-
-        // (json.dumps(payload) if payload is not None else '') to node.js
-
-
-
-
-
-
-        // console.log('url', url, JSON.stringify(params));
-        // console.log('sig', sig);
         try {
             let response = await fetch(url, {
                 method: method,
@@ -83,7 +70,6 @@ class threeCommasAPI {
                 },
                 body: method === 'POST' ? JSON.stringify(params) : null
             });
-            // console.log(response);
             return await response.json();
         } catch (e) {
             console.log(e);

@@ -98,7 +98,8 @@ export async function create_deal(params) {
     params.type_tp = 'bid'
 
 
-    params.trailing = parseFloat(params.trailing) / params.leverage
+    params.TP_trailing = parseFloat(params.TP_trailing) / params.leverage
+    params.SL_trailing = parseFloat(params.SL_trailing) / params.leverage
 
     // return true
     api.createSmartTradesV2({
@@ -128,19 +129,19 @@ export async function create_deal(params) {
                         "value": params.TPFirst_price,
                         "type": params.type_tp
                     },
-                    "volume": "25.0",
+                    "volume": "30.0",
                 },
                 {
                     // Основной TP
-                    "order_type": "market",
+                    "order_type": "limit",
                     "price": {
                         "value": params.TP_price,
                         "type": params.type_tp
                     },
-                    "volume": "40.0",
+                    "volume": "35.0",
                     "trailing": {
-                        "enabled": "true",
-                        "percent": params.trailing
+                        "enabled": params.TP_trailing ? true : false,
+                        "percent": params.TP_trailing
                     }
                 },
                 {
@@ -166,12 +167,12 @@ export async function create_deal(params) {
                 },
                 trailing: {
                     enabled: true,
-                    percent: params.trailing
+                    percent: params.SL_trailing
                 }
             },
             timeout: {
                 enabled: true,
-                value: '40' // 40 секунд - время на проверку
+                value: '60' // 60 секунд - время на проверку
             }
         }
 

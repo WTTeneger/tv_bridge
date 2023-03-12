@@ -131,7 +131,7 @@ export async function create_deal(params) {
                         "value": params.TPFirst_price,
                         "type": params.type_tp
                     },
-                    "volume": "30.0",
+                    "volume": "50.0",
                 },
                 {
                     // Основной TP
@@ -140,25 +140,12 @@ export async function create_deal(params) {
                         "value": params.TP_price,
                         "type": params.type_tp
                     },
-                    "volume": "35.0",
+                    "volume": "50.0",
                     "trailing": {
                         "enabled": params.TP_trailing ? true : false,
                         "percent": params.TP_trailing
                     }
-                },
-                {
-                    // Максимальный TP
-                    "order_type": "market",
-                    "price": {
-                        "value": params.TPMax_price,
-                        "type": params.type_tp
-                    },
-                    "volume": "35.0",
-                    "trailing": {
-                        "enabled": true,
-                        "percent": 0.25
-                    }
-                },
+                }
             ]
         },
         "stop_loss": {
